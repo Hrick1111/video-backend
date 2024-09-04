@@ -4,34 +4,79 @@ import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
-const createPlaylist = asyncHandler(async (req,res) => 
-    {
-        const {name, description} = req.body
 
-        if(!name || !description) {
-            throw new ApiError(401, "All fields are required!")}
-        
-        const responce = await Playlist.create({
+const createPlaylist = asyncHandler(async (req, res) => {
+    //TODO: create playlist ans save that particular video in that created playlist
+    const {name, description} = req.body;
+
+    if(!name || !description) {
+        throw new ApiError(401, "Both field are required.")
+    }
+
+    const responce = await Playlist.create(
+        {
             name,
             description,
             owner: new mongoose.Types.ObjectId(`${req.user?._id}`)
         }
-        )
-        if(!responce){
-            throw new ApiError(500, "Error while creating playlist")
+    )
 
-        }
-        return res.
-        status(200).
-        json(
-            new ApiResponse(200, responce, "playlist created successfully")
-        )
+    if(!responce) {
+        throw new ApiError(500, "Something went wrong while making playlist")
+    }
 
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200, responce, "Playlist created succesfully.")
+    )
 })
 
+const getUserPlaylists = asyncHandler(async (req, res) => {
+    //TODO: get user playlists
+    const {userId} = req.params
+
+    if(!isValidObjectId(userId)) {
+        throw new ApiError(400, "Invalid userID")
+    }
+
+    const playlists = await Playlist.aggregate([
+        {
+            $match: {
+                owner: new mongoose.Types.ObjectId(`${userId}`)
+            }
+        },
+            {
+            $lookup: {
+                from: "videos",
+                localField: "videos",
+                foreignField: "_id",
+                as: "details",
+                pipeline: [
+                    {
+                        $project: {
+                            thumbnail: 1
+                        }
+                    }
+                ]
+            }
+        },
+    ])
+
+    return res
+    .status(200)
+    .json(
+        playlists.length ?
+        new ApiResponse(200, playlists, "User playlist data fetched succesfully.")
+        :
+        new ApiResponse(200, playlists, "No playlist found.")
+
+    )
+    
+})
 
 const getPlaylistById = asyncHandler(async (req, res) => {
-    //get playlist by id
+    //TODO: get playlist by id
     const {playlistId} = req.params
 
     if(!isValidObjectId(playlistId)) {
@@ -173,7 +218,7 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
 const deletePlaylist = asyncHandler(async (req, res) => {
     const {playlistId} = req.params
-    // delete playlist
+    // TODO: delete playlist
 
     if(!isValidObjectId(playlistId)) {
         throw new ApiError(401,"Invalid PlaylistID.")
@@ -201,7 +246,7 @@ const deletePlaylist = asyncHandler(async (req, res) => {
 })
 
 const updatePlaylist = asyncHandler(async (req, res) => {
-    //update playlist
+    //TODO: update playlist
 
     const {playlistId} = req.params
 

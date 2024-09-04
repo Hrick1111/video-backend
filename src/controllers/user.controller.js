@@ -217,7 +217,7 @@ const refreshAccessToken = asyncHandler(async (req,res) => {
     }
 })
 
-const changeCurrentPasword = asyncHandler(async (req,res) => 
+const changeCurrentPassword = asyncHandler(async (req,res) => 
     {
     const {oldPassword, newPassword} = req.body
 
@@ -471,7 +471,7 @@ const getWatchHistory = asyncHandler(async(req, res) => {
 
 export { registerUser,loginUser, 
     logoutUser, refreshAccessToken, 
-    changeCurrentPasword, getCurrentUser,
+    changeCurrentPassword, getCurrentUser,
     updateAccountDetails, updateUserAvatar, updateUserCoverImage,
     getUserChannelProfile, getWatchHistory
 

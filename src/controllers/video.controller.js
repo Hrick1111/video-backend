@@ -4,7 +4,7 @@ import {User} from "../models/user.model.js"
 import {ApiError} from "../utils/ApiError.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
-import {uploadCloudinary} from "../utils/cloudinary.js"
+import {uploadOnCloudinary} from "../utils/cloudinary.js"
 
 
 const getAllVideos = asyncHandler(async (req, res) => {
@@ -84,8 +84,8 @@ const publishAVideo = asyncHandler(async (req, res) => {
         throw new ApiError(400, "All field are required!");
     }
 
-    const thumbnail = await uploadCloudinary(thumbnailLocalPath);
-    const videoFile = await uploadCloudinary(videoFileLocalPath);
+    const thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+    const videoFile = await uploadOnCloudinary(videoFileLocalPath);
 
     if (!thumbnail) {
         throw new ApiError(400, "Thumbnail link is required");
@@ -153,7 +153,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 
     let thumbnail;
     if (thumbnailLocalPath) {
-        thumbnail = await uploadCloudinary(thumbnailLocalPath);
+        thumbnail = await uploadOnCloudinary(thumbnailLocalPath);
 
         if (!thumbnail.url) {
             throw new ApiError(
